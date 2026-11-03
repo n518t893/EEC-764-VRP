@@ -5,12 +5,14 @@ from __future__ import annotations
 
 
 class graph_node:
-    def __init__(self, input_id, input_demand):
+    def __init__(self, input_id, input_demand, input_x_coord=0, input_y_coord=0):
         self.id = input_id
         self.demand = input_demand
         self.edges = []
         self.was_visited = False
 
+        self.x_coord = input_x_coord
+        self.y_coord = input_y_coord
 
 class graph_edge:
     def __init__(self, input_id, input_cost):

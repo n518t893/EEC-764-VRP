@@ -1,6 +1,6 @@
 import math
 
-from srcs.models import edge_cost
+from models import edge_cost
 
 
 def assign(n, v_count):
@@ -50,11 +50,11 @@ def solve(graph, fleet):
     best_c = math.inf  
     best_r = None  
     v_count = len(fleet)  
-    for assign in assign(len(cus), v_count):
+    for assign_ in assign(len(cus), v_count):
         grps = [[] for _ in fleet]  
         loads = [0 for _ in fleet]  
         fits = True
-        for c, v in zip(cus, assign):  
+        for c, v in zip(cus, assign_):  
             loads[v] += c.demand
             if loads[v] > fleet[v]:
                 fits = False

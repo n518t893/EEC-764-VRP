@@ -3,7 +3,7 @@
 
 import random
 
-from srcs.models import graph, graph_edge, graph_node
+from models import graph, graph_edge, graph_node
 
 node_id_counter = 0
 edge_id_counter = 0
@@ -29,6 +29,16 @@ def generate_graph(
     output_graph = graph(graph_id_counter)
     graph_id_counter += 1
 
+    #new coordinate-based generation needs a graph x and y size. Generate those based upon the old parameters.
+    #we just need to make an area equal to *4 the distance we want, modified a bit by the range.
+    area_to_aim_for = int(average_edge_cost - (edge_cost_range / 2) + random.randint(0, edge_cost_range)) * 4
+
+    if area_to_aim_for < 5:
+        area_to_aim_for = 5
+
+    x_coord_range = int(area_to_aim_for / edge_cost_range)
+    y_coord_range = int(area_to_aim_for / x_coord_range)
+
     if num_nodes == 0:
         return output_graph
 
@@ -39,6 +49,7 @@ def generate_graph(
             + random.randint(0, int(node_demand_range))
         )
 
+    #not used anymore becuase of coordinates
     def new_cost():
         return (
             average_edge_cost
@@ -48,14 +59,21 @@ def generate_graph(
 
     def add_node():
         global node_id_counter
-        created = graph_node(node_id_counter, new_demand())
+
+        new_x_coord = random.randint(0, x_coord_range)
+        new_y_coord = random.randint(0, y_coord_range)
+
+        created = graph_node(node_id_counter, new_demand(), input_x_coord=new_x_coord, input_y_coord=new_y_coord)
         node_id_counter += 1
         output_graph.nodes.append(created)
         return created
 
     def add_edge(node_a, node_b):
         global edge_id_counter
-        created = graph_edge(edge_id_counter, new_cost())
+
+        calculated_distance = int(((node_a.x_coord - node_b.x_coord) ** 2 + (node_a.y_coord - node_b.y_coord) ** 2) ** 0.5)
+
+        created = graph_edge(edge_id_counter, calculated_distance)
         edge_id_counter += 1
         created.node_1 = node_a
         created.node_2 = node_b
@@ -131,7 +149,11 @@ def generate_fleet(
             fleet_list.append(fleet_capacity_total)
             continue
 
-        vehicle_capacity = random.randint(0, fleet_capacity_total)
+        temp_1 = random.randint(0, fleet_capacity_total)
+        temp_2 = random.randint(0, temp_1)
+        temp_3 = random.randint(temp_2, fleet_capacity_total)
+
+        vehicle_capacity = random.randint(temp_2, temp_3)
         fleet_capacity_total -= vehicle_capacity
         fleet_list.append(vehicle_capacity)
 
